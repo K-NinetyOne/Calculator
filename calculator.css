@@ -14,20 +14,28 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 25px;
+  border-radius: 5px;
 }
 
 #screen {
   height: 35px;
-  width: 150px;
+  width: 155px;
   background-color: white;
+  font-weight: bold;
+  border-radius: 5px;
 }
 
 .numberBtn {
   height: 35px;
   width: 35px;
+  font-weight: bold;
+  border-radius: 10px;
 }
 
 .otherBtn {
   height: 35px;
   width: 35px;
+  background-color: orange;
+  font-weight: bold;
+  border-radius: 10px;
 }
