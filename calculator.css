@@ -35,7 +35,8 @@ body {
 .otherBtn {
   height: 35px;
   width: 35px;
+  font-size: 15px;
   background-color: orange;
-  font-weight: bold;
+  font-weight: 900;
   border-radius: 10px;
 }
