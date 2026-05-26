@@ -1,4 +1,4 @@
-let equationInput = [];
+let equationInput = "";
 let equationOperation = [];
 let operator;
 let answer;
@@ -11,8 +11,11 @@ const numberBtns = document.querySelectorAll(".numberBtn");
 
 numberBtns.forEach(function (numBtn) {
   numBtn.addEventListener("click", function () {
-    equationInput.push(Number(numBtn.value));
-    screen.innerText = equationInput.join("");
+    equationInput += numBtn.value;
+    screen.innerText = equationInput;
+    console.log("input:", equationInput);
+    console.log("operator:", operator);
+    console.log("operation:", equationOperation);
   });
 });
 
@@ -22,12 +25,28 @@ const operatorBtns = document.querySelectorAll(".operatorBtn");
 
 operatorBtns.forEach(function (opBtn) {
   opBtn.addEventListener("click", function () {
-    screen.innerText = opBtn.value;
-    operator = opBtn.value;
-    equationOperation[0] = Number(equationInput.join(""));
-    equationInput = [];
+    if (!operator && equationInput === "") {
+      equationInput += opBtn.value;
+    } else if (operator === "-" && equationInput === "") {
+      equationInput += opBtn.value;
+    } else {
+      screen.innerText = opBtn.value;
+      operator = opBtn.value;
+      equationOperation[0] = Number(equationInput);
+      equationInput = "";
+      console.log("input:", equationInput);
+      console.log("operator:", operator);
+      console.log("operation:", equationOperation);
+    }
   });
 });
+
+// Put this in next somehow
+
+// if operator not chosen yet AND input empty → minus means negative sign
+//add in some nested conditions like if first operator is anything by - then return
+// if operator already chosen AND second input empty → minus means negative sign
+// otherwise → subtraction operator
 
 //Divide
 const divideItems = function (arr) {
@@ -48,7 +67,7 @@ const subtractItems = function (arr) {
 
 //Equals
 document.querySelector("#equalsBtn").addEventListener("click", function () {
-  equationOperation[1] = Number(equationInput.join(""));
+  equationOperation[1] = Number(equationInput);
   if (operator === "-") {
     answer = subtractItems(equationOperation);
   } else if (operator === "+") {
@@ -62,15 +81,18 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
       answer = divideItems(equationOperation);
     }
   }
-  equationInput = [];
-  equationInput[0] = answer;
+  equationInput = "";
+  equationInput = String(answer);
   screen.innerText = answer;
+  console.log("input:", equationInput);
+  console.log("operator:", operator);
+  console.log("operation:", equationOperation);
 });
 
 //Clear
 document.querySelector("#clearBtn").addEventListener("click", function () {
   screen.innerText = "";
-  equationInput = [];
+  equationInput = "";
   equationOperation = [];
 });
 
