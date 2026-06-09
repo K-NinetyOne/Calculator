@@ -2,8 +2,11 @@ let equationInput = "";
 let equationOperation = [];
 let operator;
 let answer;
+let decimal;
+let errorMessage = "";
 
 const screen = document.querySelector("#screen");
+//if (if screen.innerText.length > 17 then truncate or round somehow)
 
 //Operands--------------------------------------------------------------------
 
@@ -11,11 +14,34 @@ const numberBtns = document.querySelectorAll(".numberBtn");
 
 numberBtns.forEach(function (numBtn) {
   numBtn.addEventListener("click", function () {
-    equationInput += numBtn.value;
-    screen.innerText = equationInput;
+    // if (typeof answer === "number" && !Number.isNaN(answer)) {
+    if (answer != "") {
+      if (errorMessage === "true") {
+        screen.innerText = "";
+        equationInput = "";
+        equationOperation = [];
+        operator = null;
+        equationInput += numBtn.value;
+        screen.innerText = equationInput;
+        errorMessage = "";
+      } else {
+        // screen.innerText = "";
+        // equationInput = "";
+        equationInput += numBtn.value;
+        screen.innerText = equationInput;
+      }
+    } else {
+      // screen.innerText = "";
+      // equationInput = "";
+      equationOperation = [];
+      operator = null;
+      equationInput += numBtn.value;
+      screen.innerText = equationInput;
+    }
     console.log("input:", equationInput);
     console.log("operator:", operator);
     console.log("operation:", equationOperation);
+    console.log(errorMessage);
   });
 });
 
@@ -25,6 +51,7 @@ const operatorBtns = document.querySelectorAll(".operatorBtn");
 
 operatorBtns.forEach(function (opBtn) {
   opBtn.addEventListener("click", function () {
+    decimal = "";
     if (opBtn.value === "-" && equationInput === "") {
       equationInput = "-";
       screen.innerText = equationInput;
@@ -64,7 +91,14 @@ const subtractItems = function (arr) {
 
 //Equals
 document.querySelector("#equalsBtn").addEventListener("click", function () {
+  decimal = "";
+  if (equationInput === "") {
+    return;
+  }
   equationOperation[1] = Number(equationInput);
+  if (!operator || isNaN(equationOperation[1])) {
+    return;
+  }
   if (operator === "-") {
     answer = subtractItems(equationOperation);
   } else if (operator === "+") {
@@ -74,10 +108,11 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
   } else if (operator === "÷") {
     if (equationOperation[1] === 0) {
       answer = "Can't divide by 0";
+      errorMessage = "true";
     } else {
       answer = divideItems(equationOperation);
     }
-  }
+  } //Limit the possible lenght of answer and round the decimals
   equationInput = "";
   equationInput = String(answer);
   screen.innerText = answer;
@@ -86,6 +121,7 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
   console.log("input:", equationInput);
   console.log("operator:", operator);
   console.log("operation:", equationOperation);
+  console.log(answer);
 });
 
 //Clear
@@ -94,11 +130,34 @@ document.querySelector("#clearBtn").addEventListener("click", function () {
   equationInput = "";
   equationOperation = [];
   operator = null;
+  decimal = "";
 });
 
-/*Next steps: 
-Expand operator array (push each  to array instead of specifying its locaiton [0], [1] etc).
-  This will allow reduce to work on any number of operands later (outside of project scope currently)
-Make condition in the operatorBtn eventListener that if array[0] is null then ignore and use - for number
-//screen.innerText = answer; then clear screen to avoid apendng new number to answer
-  */
+//Decimal
+document.querySelector("#decimalBtn").addEventListener("click", function () {
+  if (decimal === ".") {
+    return;
+  } else {
+    decimal = ".";
+    screen.innerText += ".";
+    equationInput += ".";
+  }
+  console.log(decimal);
+});
+
+//Answer Button
+document
+  .querySelector("#answerBtn")
+  .addEventListener("click", function (ansBtn) {
+    if (errorMessage === "true") {
+      return;
+    }
+    ansBtn.value = answer;
+    equationInput = ansBtn.value;
+    screen.innerText = ansBtn.value;
+    console.log(ansBtn.value);
+  });
+
+// Next to fix
+// Operator override (let second operator override the first)
+// More numbers after answer clear the answer but save it to be operated on

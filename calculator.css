@@ -40,3 +40,16 @@ body {
   font-weight: 900;
   border-radius: 10px;
 }
+
+#equalsBtn {
+  height: 35px;
+  width: 110px;
+  font-size: 15px;
+  background-color: orange;
+  font-weight: 900;
+  border-radius: 10px;
+}
+
+#answerBtn {
+  font-weight: 500;
+}
