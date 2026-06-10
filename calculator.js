@@ -3,7 +3,8 @@ let equationOperation = [];
 let operator;
 let answer;
 let decimal;
-let errorMessage = "";
+let errorMessage = false;
+let isNewInput = false;
 
 const screen = document.querySelector("#screen");
 //if (if screen.innerText.length > 17 then truncate or round somehow)
@@ -14,34 +15,27 @@ const numberBtns = document.querySelectorAll(".numberBtn");
 
 numberBtns.forEach(function (numBtn) {
   numBtn.addEventListener("click", function () {
-    // if (typeof answer === "number" && !Number.isNaN(answer)) {
-    if (answer != "") {
-      if (errorMessage === "true") {
-        screen.innerText = "";
-        equationInput = "";
-        equationOperation = [];
-        operator = null;
-        equationInput += numBtn.value;
-        screen.innerText = equationInput;
-        errorMessage = "";
-      } else {
-        // screen.innerText = "";
-        // equationInput = "";
-        equationInput += numBtn.value;
-        screen.innerText = equationInput;
-      }
+    // if (errorMessage === true) {
+    //   screen.innerText = "";
+    //   equationInput = "";
+    //   isNewInput = false;
+    //   equationInput += numBtn.value;
+    //   screen.innerText = equationInput;
+    //   errorMessage = false;
+    // } Add into the "Cant' divide by zero" function to ignore zero as an operand and wait for new input
+    // use isNewInput = true if divide bt zero maybe
+
+    if (isNewInput === true) {
+      screen.innerText = "";
+      equationInput = "";
+      isNewInput = false;
+      errorMessage = false;
+      equationInput += numBtn.value;
+      screen.innerText = equationInput;
     } else {
-      // screen.innerText = "";
-      // equationInput = "";
-      equationOperation = [];
-      operator = null;
       equationInput += numBtn.value;
       screen.innerText = equationInput;
     }
-    console.log("input:", equationInput);
-    console.log("operator:", operator);
-    console.log("operation:", equationOperation);
-    console.log(errorMessage);
   });
 });
 
@@ -64,9 +58,6 @@ operatorBtns.forEach(function (opBtn) {
       operator = opBtn.value;
       equationOperation[0] = Number(equationInput);
       equationInput = "";
-      console.log("input:", equationInput);
-      console.log("operator:", operator);
-      console.log("operation:", equationOperation);
       return;
     }
   });
@@ -99,6 +90,7 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
   if (!operator || isNaN(equationOperation[1])) {
     return;
   }
+  isNewInput = true;
   if (operator === "-") {
     answer = subtractItems(equationOperation);
   } else if (operator === "+") {
@@ -108,20 +100,18 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
   } else if (operator === "÷") {
     if (equationOperation[1] === 0) {
       answer = "Can't divide by 0";
-      errorMessage = "true";
+      errorMessage = true;
+      // isNewInput = true;
+      // equationOperation[1] = [];
     } else {
       answer = divideItems(equationOperation);
     }
-  } //Limit the possible lenght of answer and round the decimals
+  } //Limit the possible lenght of answer and round the decimals not mathRound as makes integer
   equationInput = "";
   equationInput = String(answer);
   screen.innerText = answer;
   operator = null;
   equationOperation = [];
-  console.log("input:", equationInput);
-  console.log("operator:", operator);
-  console.log("operation:", equationOperation);
-  console.log(answer);
 });
 
 //Clear
@@ -142,22 +132,21 @@ document.querySelector("#decimalBtn").addEventListener("click", function () {
     screen.innerText += ".";
     equationInput += ".";
   }
-  console.log(decimal);
 });
 
 //Answer Button
 document
   .querySelector("#answerBtn")
   .addEventListener("click", function (ansBtn) {
-    if (errorMessage === "true") {
+    isNewInput = true;
+    if (errorMessage === true) {
       return;
     }
     ansBtn.value = answer;
     equationInput = ansBtn.value;
     screen.innerText = ansBtn.value;
-    console.log(ansBtn.value);
   });
 
 // Next to fix
-// Operator override (let second operator override the first)
-// More numbers after answer clear the answer but save it to be operated on
+// Operator override (let second operator override the first) maybe if equationInput = "" then override
+// Screen overflow issues maybe screen.innerText = stringLength(last 15 chars somehow)
