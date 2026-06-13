@@ -2,7 +2,6 @@ let equationInput = "";
 let equationOperation = [];
 let operator;
 let answer;
-let decimal;
 let containsDecimal = false;
 let errorMessage = false;
 let isNewInput = false;
@@ -16,25 +15,25 @@ const numberBtns = document.querySelectorAll(".numberBtn");
 numberBtns.forEach(function (numBtn) {
   numBtn.addEventListener("click", function () {
     if (errorMessage === true) {
-      screen.innerText = "";
-      equationInput = "";
+      awaitNext();
+      equationOperation = [];
       errorMessage = false;
       isNewInput = false;
       equationInput += numBtn.value;
-      screen.innerText = equationInput;
-    } //Add into the "Cant' divide by zero" function to ignore zero as an operand and wait for new input
-    // use isNewInput = true if divide bt zero maybe
+      updateScreen(equationInput);
+      return;
+    }
 
     if (isNewInput === true) {
-      screen.innerText = "";
-      equationInput = "";
+      awaitNext();
+      containsDecimal = false;
       isNewInput = false;
       errorMessage = false;
       equationInput += numBtn.value;
-      screen.innerText = equationInput;
+      updateScreen(equationInput);
     } else {
       equationInput += numBtn.value;
-      screen.innerText = equationInput;
+      updateScreen(equationInput);
     }
   });
 });
@@ -45,18 +44,18 @@ const operatorBtns = document.querySelectorAll(".operatorBtn");
 
 operatorBtns.forEach(function (opBtn) {
   opBtn.addEventListener("click", function () {
-    decimal = "";
+    containsDecimal = false;
     if (opBtn.value === "-" && equationInput === "") {
       equationInput = "-";
-      screen.innerText = equationInput;
+      updateScreen(equationInput);
       return;
     }
     if (equationInput === "") {
       operator = opBtn.value;
-      screen.innerText = opBtn.value;
+      updateScreen(opBtn.value);
       return;
     } else {
-      screen.innerText = opBtn.value;
+      updateScreen(opBtn.value);
       operator = opBtn.value;
       equationOperation[0] = Number(equationInput);
       equationInput = "";
@@ -84,7 +83,7 @@ const subtractItems = function (arr) {
 
 //Equals
 document.querySelector("#equalsBtn").addEventListener("click", function () {
-  decimal = "";
+  containsDecimal = false;
   if (equationInput === "") {
     return;
   }
@@ -94,61 +93,47 @@ document.querySelector("#equalsBtn").addEventListener("click", function () {
   }
   isNewInput = true;
   if (operator === "-") {
-    if (containsDecimal === true) {
-      answer = subtractItems(equationOperation).toFixed(8);
-    } else {
-      answer = subtractItems(equationOperation);
-    }
-  } else if (operator === "+") {
-    if (containsDecimal === true) {
-      answer = addItems(equationOperation).toFixed(8);
-    } else {
-      answer = addItems(equationOperation);
-    }
-  } else if (operator === "x") {
-    if (containsDecimal === true) {
-      answer = multiplyItems(equationOperation).toFixed(8);
-    } else {
-      answer = multiplyItems(equationOperation);
-    }
-  } else if (operator === "÷") {
+    answer = subtractItems(equationOperation);
+  }
+  if (operator === "+") {
+    answer = addItems(equationOperation);
+  }
+  if (operator === "x") {
+    answer = multiplyItems(equationOperation);
+  }
+  if (operator === "÷") {
     if (equationOperation[1] === 0) {
       answer = "Can't divide by 0";
       errorMessage = true;
       isNewInput = true;
-      equationOperation[1] = [];
-    } else if (containsDecimal === true) {
-      answer = divideItems(equationOperation).toFixed(8);
-    } else answer = divideItems(equationOperation);
+      updateScreen(answer);
+      return;
+    } else {
+      answer = divideItems(equationOperation);
+    }
   }
-  equationInput = "";
+  if (typeof answer === "number" && !Number.isInteger(answer)) {
+    answer = Number(answer.toFixed(8));
+  }
   equationInput = String(answer);
-  screen.innerText = answer;
-  operator = null;
-  containsDecimal = false;
-  equationOperation = [];
+  updateScreen(answer);
+  resetOperation();
 });
 
 //Clear
 document.querySelector("#clearBtn").addEventListener("click", function () {
-  screen.innerText = "";
-  equationInput = "";
-  equationOperation = [];
-  operator = null;
-  decimal = "";
-  containsDecimal = false;
+  awaitNext();
+  resetOperation();
 });
 
 //Decimal
 document.querySelector("#decimalBtn").addEventListener("click", function () {
-  containsDecimal = true;
-  if (decimal === ".") {
+  if (containsDecimal === true) {
     return;
-  } else {
-    decimal = ".";
-    screen.innerText += ".";
-    equationInput += ".";
   }
+  containsDecimal = true;
+  screen.innerText += ".";
+  equationInput += ".";
 });
 
 //Answer Button
@@ -161,8 +146,26 @@ document
     }
     ansBtn.value = answer;
     equationInput = ansBtn.value;
-    screen.innerText = ansBtn.value;
+    updateScreen(ansBtn.value);
   });
 
-// Next to fix
-// Screen overflow issues maybe screen.innerText = stringLength(last 15 chars somehow)
+//Helper functions
+function updateScreen(value) {
+  const displayLength = 17;
+  value = String(value);
+  if (value.length > displayLength) {
+    value = value.slice(-displayLength);
+  }
+  screen.innerText = value;
+}
+
+function resetOperation() {
+  equationOperation = [];
+  operator = null;
+  containsDecimal = false;
+}
+
+function awaitNext() {
+  screen.innerText = "";
+  equationInput = "";
+}
