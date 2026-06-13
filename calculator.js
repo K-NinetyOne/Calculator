@@ -9,7 +9,6 @@ let isNewInput = false;
 const screen = document.querySelector("#screen");
 
 //Operands--------------------------------------------------------------------
-
 const numberBtns = document.querySelectorAll(".numberBtn");
 
 numberBtns.forEach(function (numBtn) {
@@ -39,7 +38,6 @@ numberBtns.forEach(function (numBtn) {
 });
 
 //Operators-------------------------------------------------------------------
-
 const operatorBtns = document.querySelectorAll(".operatorBtn");
 
 operatorBtns.forEach(function (opBtn) {
